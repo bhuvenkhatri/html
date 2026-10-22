@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HTML Runner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--tx:#111;--mut:#6b6b76;--ac:#0a84ff;--bd:#d8d8e0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--tx:#f2f2f7;--mut:#98989f;--bd:#38383a}}
+:root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--tx:#f2f2f7;--mut:#98989f;--bd:#38383a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",Helvetica,Arial,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:28px;margin:8px 0 4px}
+p.s{color:var(--mut);margin:0 0 16px;font-size:14px}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:14px;border:1px solid var(--bd)}
+button,.btn{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-size:17px;font-weight:600;background:var(--ac);color:#fff;text-align:center;cursor:pointer;font-family:inherit}
+button.g{background:transparent;color:var(--ac);border:1px solid var(--bd)}
+input[type=file]{display:none}
+textarea{width:100%;height:220px;border:1px solid var(--bd);border-radius:12px;padding:10px;background:var(--bg);color:var(--tx);font:13px/1.4 ui-monospace,Menlo,monospace;resize:vertical}
+.row{display:flex;gap:10px;margin-top:10px}
+#fn{font-size:14px;color:var(--mut);margin:8px 2px 0;word-break:break-all}
+#run{position:fixed;inset:0;background:#fff;z-index:50;display:none}
+#run iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+#bar{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);right:10px;z-index:60;display:none;gap:8px}
+#bar button{width:auto;padding:8px 14px;font-size:14px;border-radius:20px;background:rgba(30,30,32,.85);color:#fff;backdrop-filter:blur(8px)}
+</style>
+</head>
+<body>
+<main id="home">
+<h1>HTML Runner</h1>
+<p class="s">Apni HTML file upload karo ya code paste karo, phir Run dabao.</p>
+
+<div class="card">
+<label class="btn" for="f">📂 HTML file choose karo</label>
+<input id="f" type="file" accept=".html,.htm,text/html">
+<div id="fn">Koi file select nahi hui</div>
+</div>
+
+<div class="card">
+<textarea id="code" placeholder="Ya yahan HTML code paste karo..." spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
+<div class="row">
+<button class="g" id="clr">Clear</button>
+<button id="go">▶ Run</button>
+</div>
+</div>
+<p class="s">Tip: Safari mein Share → “Add to Home Screen” karo, app jaisa full screen khulega.</p>
+</main>
+
+<div id="run"><iframe id="fr" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-pointer-lock allow-downloads"></iframe></div>
+<div id="bar"><button id="rl">↻</button><button id="cl">✕ Close</button></div>
+
+<script>
+var code=document.getElementById('code'),fn=document.getElementById('fn'),run=document.getElementById('run'),fr=document.getElementById('fr'),bar=document.getElementById('bar');
+try{var sv=localStorage.getItem('runner_code');if(sv)code.value=sv;}catch(e){}
+function save(){try{localStorage.setItem('runner_code',code.value);}catch(e){}}
+code.addEventListener('input',save);
+document.getElementById('f').addEventListener('change',function(e){
+  var file=e.target.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(){code.value=r.result;fn.textContent=file.name+' ('+Math.round(file.size/1024)+' KB) ✓';save();};
+  r.readAsText(file);
+});
+function show(){
+  if(!code.value.trim()){alert('Pehle file upload karo ya code paste karo.');return;}
+  fr.srcdoc=code.value;run.style.display='block';bar.style.display='flex';document.body.style.overflow='hidden';
+}
+function hide(){run.style.display='none';bar.style.display='none';fr.srcdoc='';document.body.style.overflow='';}
+document.getElementById('go').onclick=show;
+document.getElementById('cl').onclick=hide;
+document.getElementById('rl').onclick=function(){var c=code.value;fr.srcdoc='';setTimeout(function(){fr.srcdoc=c;},50);};
+document.getElementById('clr').onclick=function(){code.value='';fn.textContent='Koi file select nahi hui';save();};
+</script>
+</body>
+</html>
